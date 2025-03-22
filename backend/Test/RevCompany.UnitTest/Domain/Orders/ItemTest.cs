@@ -1,0 +1,31 @@
+using FluentAssertions;
+using RevCompany.Domain.Entities.Order;
+using RevCompany.Domain.Entities.Order.builder;
+
+namespace RevCompany.UnitTest.Domain.Orders;
+
+public class ItemTest
+{
+  [Fact(DisplayName = nameof(ShouldBuild_AndReturnAnItem))]
+  [Trait("Item", "Domain - Item")]
+  public void ShouldBuild_AndReturnAnItem() {
+    
+    var productId = Guid.NewGuid();
+    var quantity = 3;
+    var unitPrice = Convert.ToDecimal(18.56);
+
+    var item = ItemBuilder.Create()
+      .WithProductId(productId)
+      .WithQuantity(quantity)
+      .WithUnitPrice(unitPrice)
+      .Build();
+
+    item.Should().BeOfType<Item>();
+    item.Should().NotBeNull();
+    item.ProductId.Should().Be(productId);
+    item.Quantity.Should().Be(quantity);
+    item.UnitPrice.Should().BeGreaterThan(0);
+    item.UnitPrice.Should().Be(unitPrice);
+  
+  }
+}
