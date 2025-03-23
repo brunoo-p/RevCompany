@@ -1,15 +1,35 @@
+using RevCompany.Application.Common.Interfaces.Authentication;
+
 namespace RevCompany.Application.Services.Authentication;
 
 public class AuthenticationService : IAuthenticationService
 {
-  public AuthenticationResult Signin(string name, string password)
+  private readonly IJwtTokenGenerator _jwtTokenGenerator;
+
+  public AuthenticationService(IJwtTokenGenerator jwtTokenGenerator)
   {
-    return new AuthenticationResult(Guid.NewGuid(), "John", "Doe", "email@email.com", "token");
+    this._jwtTokenGenerator = jwtTokenGenerator;
+  }
+
+  
+  public AuthenticationResult Signin(string email, string password)
+  {
+    var token = _jwtTokenGenerator.GenerateToken(Guid.NewGuid(), email, password);
+    return new AuthenticationResult(Guid.NewGuid(), "john", "doe", email, token);
   }
 
   public AuthenticationResult Signup(string firstName, string lastName, string email, string password)
   {
-    return new AuthenticationResult(Guid.NewGuid(), "John", "Doe", "email@email.com", "token");
+
+    var token = _jwtTokenGenerator.GenerateToken(Guid.NewGuid(), firstName, lastName);
+    
+    Guid userId = Guid.NewGuid();
+    return new AuthenticationResult(
+      userId,
+      firstName,
+      lastName,
+      email,
+      token);
   }
 }
 
