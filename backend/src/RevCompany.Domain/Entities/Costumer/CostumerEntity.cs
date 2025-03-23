@@ -10,9 +10,11 @@ public class Costumer(CostumerName name, Email email, string phone, Address addr
   public Email Email { get; private set; } = email;
   public string Phone { get; private set; } = phone;
   public Address Address { get; private set; } = address;
+  public CostumerStatusEnum Status { get; private set; } = CostumerStatusEnum.ACTIVE;
 
   public void UpdateName(CostumerName name) => this.Name = name;
   public void UpdateEmail(Email email) => this.Email = email;
   public void UpdatePhone(string phone) => this.Phone = phone;
   public void UpdateAddress(Address address) => this.Address = address;
+  public void UpdateStatus(CostumerStatusEnum status) => this.Status = status;
 }
