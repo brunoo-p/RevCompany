@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.VisualBasic;
 using RevCompany.Application.Common.Interfaces.Authentication;
 using RevCompany.Application.Common.Interfaces.Services.token;
+using RevCompany.Domain.Entities.User;
 using RevCompany.Infrastructure.Authentication.token;
 
 namespace RevCompany.Infrastructure.Authentication;
@@ -23,7 +24,7 @@ public class JwtTokenGenerator : IJwtTokenGenerator
     this._dateTimeProvider = dateTimeProvider;
     this._jwtSettings = _jwtOptions.Value;
   }
-  public string GenerateToken(Guid userId, string firstName, string lastName)
+  public string GenerateToken(User user)
   {
     var signingCredentials = new SigningCredentials(
       new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this._jwtSettings.Secret)),
@@ -31,9 +32,9 @@ public class JwtTokenGenerator : IJwtTokenGenerator
 
     var claims = new[]
     {
-      new Claim(JwtRegisteredClaimNames.Sub, userId.ToString()),
-      new Claim(JwtRegisteredClaimNames.GivenName, firstName),
-      new Claim(JwtRegisteredClaimNames.FamilyName, lastName),
+      new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+      new Claim(JwtRegisteredClaimNames.GivenName, user.FirstName),
+      new Claim(JwtRegisteredClaimNames.FamilyName, user.LastName),
       new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
     };
 

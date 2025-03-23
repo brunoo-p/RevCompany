@@ -14,7 +14,9 @@ public class Authentication : ControllerBase
   private readonly IAuthenticationService _authenticationService;
   private readonly ILogger<Authentication> _logger;
 
-  public Authentication(IAuthenticationService authenticationService, ILogger<Authentication> logger)
+  public Authentication(
+    IAuthenticationService authenticationService,
+    ILogger<Authentication> logger)
   {
     this._authenticationService = authenticationService;
     _logger = logger;
@@ -27,10 +29,10 @@ public class Authentication : ControllerBase
     var result = this._authenticationService.Signin(request.Email, request.Password);
         
     var response = new AuthenticationResponseVo(
-      result.Id,
-      result.FirstName,
-      result.LastName,
-      result.Email,
+      result.user.Id,
+      result.user.FirstName,
+      result.user.LastName,
+      result.user.Email.value,
       result.Token);
         
     return Ok(response);
@@ -47,10 +49,10 @@ public class Authentication : ControllerBase
       request.Password);
         
     var response = new AuthenticationResponseVo(
-      result.Id,
-      result.FirstName,
-      result.LastName,
-      result.Email,
+      result.user.Id,
+      result.user.FirstName,
+      result.user.LastName,
+      result.user.Email.value,
       result.Token);
         
     return Ok(response);

@@ -1,0 +1,6 @@
+@host=http://localhost:5117/v1
+
+GET {{host}}/costumer/listAll
+Content-Type: application/json
+
+

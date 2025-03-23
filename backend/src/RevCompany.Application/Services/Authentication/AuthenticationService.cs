@@ -1,35 +1,62 @@
 using RevCompany.Application.Common.Interfaces.Authentication;
+using RevCompany.Application.Common.Interfaces.Persistence;
+using RevCompany.Domain.Entities.common;
+using RevCompany.Domain.Entities.User;
 
 namespace RevCompany.Application.Services.Authentication;
 
 public class AuthenticationService : IAuthenticationService
 {
   private readonly IJwtTokenGenerator _jwtTokenGenerator;
+  private readonly IUserRepository _userRepository;
 
-  public AuthenticationService(IJwtTokenGenerator jwtTokenGenerator)
+  public AuthenticationService(
+    IJwtTokenGenerator jwtTokenGenerator,
+    IUserRepository userRepository
+  )
   {
     this._jwtTokenGenerator = jwtTokenGenerator;
+    this._userRepository = userRepository;
   }
 
   
   public AuthenticationResult Signin(string email, string password)
   {
-    var token = _jwtTokenGenerator.GenerateToken(Guid.NewGuid(), email, password);
-    return new AuthenticationResult(Guid.NewGuid(), "john", "doe", email, token);
+    try {
+    
+    if (_userRepository.GetUserByEmail(email) is not User user) {
+        throw new Exception("Invalid email");
+      };
+
+      if (user.Password != password) {
+         throw new Exception("Invalid password");
+      }
+        
+      var token = _jwtTokenGenerator.GenerateToken(user);
+      return new AuthenticationResult(user, token);
+    
+    } catch (Exception e) {
+      throw new Exception(e.Message);
+    }
+
   }
+
 
   public AuthenticationResult Signup(string firstName, string lastName, string email, string password)
   {
-
-    var token = _jwtTokenGenerator.GenerateToken(Guid.NewGuid(), firstName, lastName);
     
-    Guid userId = Guid.NewGuid();
-    return new AuthenticationResult(
-      userId,
-      firstName,
-      lastName,
-      email,
-      token);
+  
+    if (_userRepository.GetUserByEmail(email) is not null) {
+      return null;
+    };
+
+    Email userEmail = new Email(email);
+    var user = new User(firstName, lastName, userEmail, password);
+
+    // var token = _jwtTokenGenerator.GenerateToken(user);
+    _userRepository.Add(user);
+    
+    return this.Signin(user.Email.value, user.Password);
   }
 }
 
