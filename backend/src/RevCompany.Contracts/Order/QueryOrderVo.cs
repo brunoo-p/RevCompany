@@ -2,8 +2,10 @@ using RevCompany.Domain.Entities.Order;
 
 namespace RevCompany.Contracts.Order;
 
-public record ResponseVo(
+public record QueryOrderVo(
   Guid OrderId,
-  Guid ClientId,
+  Guid CostumerID,
+  List<Item> Items,
+  decimal TotalValue,
   OrderStatusEnum Status = OrderStatusEnum.PROCESSING
 );

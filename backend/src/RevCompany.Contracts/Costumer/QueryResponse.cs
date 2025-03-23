@@ -1,9 +1,9 @@
-using RevCompany.Domain.Entities.Costumer;
-
 namespace RevCompany.Contracts.Costumer;
 
-public record CostumerResponseVo(
+public record QueryResponse(
   Guid Id,
   string Name,
+  string Email,
+  string Phone,
   string Status
 );

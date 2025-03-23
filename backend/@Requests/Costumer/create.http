@@ -1,0 +1,19 @@
+@host=http://localhost:5117/v1
+
+POST {{host}}/costumer/create
+Content-Type: application/json
+
+
+{
+  "name": "john doe",
+  "email": "email@email.com",
+  "phone": "0011111111",
+  "address": {
+    "street": "street",
+    "number": 0,
+    "city": "city",
+    "state": "state",
+    "country": "country",
+    "zipCode": "zipcode"
+  }
+}
