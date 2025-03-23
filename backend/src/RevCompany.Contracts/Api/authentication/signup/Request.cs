@@ -1,6 +1,6 @@
 namespace RevCompany.Contracts.Api.Register;
 
-public record RegisterRequestVo(
+public record SignupRequest(
  string FirstName,
   string LastName,
   string Email,

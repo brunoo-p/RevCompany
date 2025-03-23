@@ -8,13 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\RevCompany.Contracts\RevCompany.Contracts.csproj" />
+    <ProjectReference Include="..\RevCompany.Application\RevCompany.Application.csproj" />
+    <ProjectReference Include="..\RevCompany.Infrastructure\RevCompany.Infrastructure.csproj" />
   </ItemGroup>
-  
 
 </Project>

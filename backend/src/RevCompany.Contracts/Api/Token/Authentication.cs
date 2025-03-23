@@ -1,5 +1,9 @@
 namespace RevCompany.Contracts.Api.Response;
 
 public record AuthenticationResponseVo(
-  string Token
+    Guid Id,
+    string FirstName,
+    string LastName,
+    string Email,
+    string Token
 );
