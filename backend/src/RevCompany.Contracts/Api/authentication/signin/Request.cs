@@ -1,6 +1,6 @@
 namespace RevCompany.Contracts.Api.Login;
 
-public record LoginRequest(
+public record SigninRequest(
   string Email,
   string Password
 );

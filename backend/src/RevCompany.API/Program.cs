@@ -1,9 +1,16 @@
-using RevCompany.API.Common.Extensions;
+
+using RevCompany.Application.DependencyInjection;
+using RevCompany.Infrastructure.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services
+    .AddApplication()
+    .AddInfrastructure();
 
 var app = builder.Build();
 
@@ -19,7 +26,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapEndpoints();
+app.UseAuthorization();
+
+app.MapControllers();
 
 app.Run();
-
