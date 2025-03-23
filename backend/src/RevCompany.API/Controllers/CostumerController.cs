@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RevCompany.Application.Services.Costumer;
 using RevCompany.Contracts.Costumer;
@@ -7,6 +8,7 @@ namespace RevCompany.API.Controllers;
 
 [ApiController]
 [Route("v1/costumer")]
+[Authorize]
 public class CostumerController : ControllerBase
 {
   private readonly ICostumerService _costumerService;
