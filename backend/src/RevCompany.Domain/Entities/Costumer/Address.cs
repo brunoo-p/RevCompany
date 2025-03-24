@@ -1,6 +1,8 @@
+using RevCompany.Domain.SeedWork;
+
 namespace RevCompany.Domain.Entities.Costumer;
 
-public class Address
+public class Address : Entity
 {
    public string Street { get; private set; }
   public int Number { get; private set; }

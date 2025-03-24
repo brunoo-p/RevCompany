@@ -4,6 +4,7 @@ using RevCompany.Contracts.Costumer;
 using RevCompany.Domain.Entities.common;
 using RevCompany.Domain.Entities.Costumer;
 using RevCompany.Domain.Entities.Costumers;
+using RevCompany.Infrastructure.Persistence.costumer;
 
 
 namespace RevCompany.Application.Services.Costumer;
@@ -17,58 +18,58 @@ public class CostumerService : ICostumerService
     this._costumerRepository = costumerRepository;
   }
 
-  public CostumerResult Create(string name, string email, string phone, Address address)
+  public async Task<CostumerResult> CreateAsync(string name, string email, string phone, Address address)
   {
-    if(_costumerRepository.GetByEmail(email) is not null) {
+
+    if(await _costumerRepository.GetByEmail(email) is not null) {
       throw new Exception("Invalid costumer");
     }
     
     var costumer = new CostumerEntity(
-      name,
-      new Email(email),
-      phone,
-      address
+      name, new Email(email), phone, address
     );
-    this._costumerRepository.Create(costumer);
-    return new CostumerResult(costumer);
+    
+    var created = await this._costumerRepository.CreateAsync(costumer);
+    return new CostumerResult(created);
   }
 
-  public List<CostumerResult> GetAll()
+  public async Task<List<CostumerResult>> GetAllAsync()
   {
-    var list = this._costumerRepository.GetAll();
-    return [.. list.Select(costumer => new CostumerResult(costumer))];
+    var list = await this._costumerRepository.GetAllAsync();
+    return list.Select(costumer => new CostumerResult(costumer)).ToList();
   }
 
-  public CostumerResult GetById(string id)
+  public async Task<CostumerResult> GetByIdAsync(string id)
   {
-    if (this._costumerRepository.GetById(id) is not CostumerEntity costumer) {
+    if (await this._costumerRepository.GetByIdAsync(id) is not CostumerDTO costumer) {
       throw new Exception("not found");
     };
     
     return new CostumerResult(costumer);
   }
 
-  public CostumerResult GetByEmail(string email)
+  public async Task<CostumerResult> GetByEmail(string email)
   {
-    if (this._costumerRepository.GetByEmail(email) is not CostumerEntity costumer) {
+    if (await this._costumerRepository.GetByEmail(email) is not CostumerDTO costumer) {
       throw new Exception("Invalid email");
     };
     
     return new CostumerResult(costumer);
   }
 
-    public CostumerResult Update(string id, string name, string email, string phone, Address address)
+  public async Task<CostumerResult> UpdateAsync(string id, string name, string email, string phone, Address address, string status)
   {
-    var costumerFound = this.GetById(id);
+    var costumerFound = await this.GetByIdAsync(id);
     if(costumerFound is not CostumerResult) {
       throw new Exception("Invalid costumer");
     }
 
-    costumerFound.costumer.UpdateName(name);
-    costumerFound.costumer.UpdateEmail(email);
-    costumerFound.costumer.UpdatePhone(phone);
-    costumerFound.costumer.UpdateAddress(address);
+    var costumer = new CostumerEntity(
+      name, new Email(email), phone, address, Enum.Parse<CostumerStatusEnum>(status)
+    );
+
+    var updated = await _costumerRepository.UpdateAsync(costumer);
    
-    return new CostumerResult(costumerFound.costumer);
+    return new CostumerResult(updated);
   }
 }

@@ -4,6 +4,7 @@ using RevCompany.Contracts.Api.Login;
 using RevCompany.Contracts.Api.Register;
 using RevCompany.Contracts.Api.Response;
 
+
 namespace RevCompany.API.Controllers;
 
 [ApiController]
@@ -23,26 +24,26 @@ public class Authentication : ControllerBase
   }
 
   [HttpPost("signin")]
-  public IActionResult Login(SigninRequest request)
+  public async Task<IActionResult> Login(SigninRequest request)
   {
 
-    var result = this._authenticationService.Signin(request.Email, request.Password);
+    var result = await this._authenticationService.Signin(request.Email, request.Password);
         
     var response = new AuthenticationResponseVo(
       result.user.Id,
       result.user.FirstName,
       result.user.LastName,
-      result.user.Email.value,
+      result.user.Email,
       result.Token);
         
     return Ok(response);
   }
 
   [HttpPost("signup")]
-  public IActionResult Register(SignupRequest request)
+  public async Task<IActionResult> Register(SignupRequest request)
   {
 
-    var result = this._authenticationService.Signup(
+    var result = await this._authenticationService.Signup(
       request.FirstName,
       request.LastName,
       request.Email,
@@ -52,7 +53,7 @@ public class Authentication : ControllerBase
       result.user.Id,
       result.user.FirstName,
       result.user.LastName,
-      result.user.Email.value,
+      result.user.Email,
       result.Token);
         
     return Ok(response);

@@ -6,9 +6,9 @@ namespace RevCompany.Application.Services.Costumer;
 
 public interface ICostumerService
 {
-  CostumerResult Create(string name, string email, string phone, Address address);
-  List<CostumerResult> GetAll();
-  CostumerResult GetById(string id);
-  CostumerResult Update(string id, string name, string email, string phone, Address address);
+  Task<CostumerResult> CreateAsync(string name, string email, string phone, Address address);
+  Task<List<CostumerResult>> GetAllAsync();
+  Task<CostumerResult> GetByIdAsync(string id);
+  Task<CostumerResult> UpdateAsync(string id, string name, string email, string phone, Address address, string status);
 
 }

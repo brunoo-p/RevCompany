@@ -13,6 +13,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.Extensions.Options;
 using RevCompany.Infrastructure.Persistence.order;
+using RevCompany.Infrastructure.Data;
+using RevCompany.Infrastructure.Persistence;
 
 namespace RevCompany.Infrastructure.DependencyInjection;
 
@@ -29,6 +31,14 @@ public static class Injection
     services.AddScoped<IUserRepository, UserRepository>();
     services.AddScoped<ICostumerRepository, CostumerRepository>();
     services.AddScoped<IOrderRepository, OrderRepository>();
+    services.AddScoped<IEnsureTableExistsService, EnsureTableExistsService>();
+    
+    services.AddScoped<AppDataContext>(provider => 
+    {
+      var configuration = provider.GetRequiredService<IConfiguration>();
+      var connectionString = configuration.GetConnectionString("DefaultConnection");
+      return new AppDataContext(new ConnectionString(connectionString));
+    });
 
     return services;
   }

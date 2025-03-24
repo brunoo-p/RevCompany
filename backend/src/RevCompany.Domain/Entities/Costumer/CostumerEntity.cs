@@ -4,13 +4,13 @@ using RevCompany.Domain.SeedWork;
 
 namespace RevCompany.Domain.Entities.Costumers;
 
-public class CostumerEntity(string name, Email email, string phone, Address address) : Entity
+public class CostumerEntity(string name, Email email, string phone, Address address, CostumerStatusEnum status = CostumerStatusEnum.ACTIVE) : Entity
 {
   public string Name { get; private set; } = name;
   public Email Email { get; private set; } = email;
   public string Phone { get; private set; } = phone;
   public Address Address { get; private set; } = address;
-  public CostumerStatusEnum Status { get; private set; } = CostumerStatusEnum.ACTIVE;
+  public CostumerStatusEnum Status { get; private set; } = status;
 
   public string GetStatus() {
     return this.Status.ToString();

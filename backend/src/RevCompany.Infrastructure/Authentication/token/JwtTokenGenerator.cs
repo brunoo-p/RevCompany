@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.VisualBasic;
 using RevCompany.Application.Common.Interfaces.Authentication;
 using RevCompany.Application.Common.Interfaces.Services.token;
+using RevCompany.Contracts.User;
 using RevCompany.Domain.Entities.User;
 using RevCompany.Infrastructure.Authentication.token;
 
@@ -24,7 +25,7 @@ public class JwtTokenGenerator : IJwtTokenGenerator
     this._dateTimeProvider = dateTimeProvider;
     this._jwtSettings = _jwtOptions.Value;
   }
-  public string GenerateToken(User user)
+  public string GenerateToken(UserDTO user)
   {
     var signingCredentials = new SigningCredentials(
       new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this._jwtSettings.Secret)),

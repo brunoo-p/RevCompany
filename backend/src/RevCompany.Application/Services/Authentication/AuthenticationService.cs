@@ -1,5 +1,6 @@
 using RevCompany.Application.Common.Interfaces.Authentication;
 using RevCompany.Application.Common.Interfaces.Persistence;
+using RevCompany.Contracts.User;
 using RevCompany.Domain.Entities.common;
 using RevCompany.Domain.Entities.User;
 
@@ -20,19 +21,19 @@ public class AuthenticationService : IAuthenticationService
   }
 
   
-  public AuthenticationResult Signin(string email, string password)
+  public async Task<AuthenticationResult> Signin(string email, string password)
   {
     try {
-    
-    if (_userRepository.GetUserByEmail(email) is not User user) {
+      
+      if (await _userRepository.GetUserByEmailAsync(email) is not UserDTO user) {
         throw new Exception("Invalid email");
       };
 
       if (user.Password != password) {
          throw new Exception("Invalid password");
       }
-        
-      var token = _jwtTokenGenerator.GenerateToken(user);
+      
+      var token = GenerateToken(user);
       return new AuthenticationResult(user, token);
     
     } catch (Exception e) {
@@ -42,22 +43,27 @@ public class AuthenticationService : IAuthenticationService
   }
 
 
-  public AuthenticationResult Signup(string firstName, string lastName, string email, string password)
+  public async Task<AuthenticationResult> Signup(string firstName, string lastName, string email, string password)
   {
-    
   
-    if (_userRepository.GetUserByEmail(email) is not null) {
+    if (await _userRepository.GetUserByEmailAsync(email) is not null) {
       return null;
     };
 
     Email userEmail = new Email(email);
     var user = new User(firstName, lastName, userEmail, password);
 
-    // var token = _jwtTokenGenerator.GenerateToken(user);
-    _userRepository.Add(user);
+    await _userRepository.AddAsync(user);
     
-    return this.Signin(user.Email.value, user.Password);
+    return await Signin(user.Email.value, user.Password);
   }
+
+  private string GenerateToken(UserDTO user) {
+
+    return _jwtTokenGenerator.GenerateToken(user);
+
+  }
+
 }
 
 
