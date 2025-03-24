@@ -2,13 +2,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RevCompany.Application.Services.Costumer;
 using RevCompany.Contracts.Costumer;
-using RevCompany.Domain.Entities.Costumer;
 
 namespace RevCompany.API.Controllers;
 
 [ApiController]
 [Route("v1/costumer")]
-[Authorize]
+// [Authorize]
 public class CostumerController : ControllerBase
 {
   private readonly ICostumerService _costumerService;
@@ -23,9 +22,9 @@ public class CostumerController : ControllerBase
   }
 
   [HttpGet("listAll")]
-  public IActionResult GetAll()
+  public async Task<IActionResult> GetAllAsync()
   {
-    var result = this._costumerService.GetAll();
+    var result = await this._costumerService.GetAllAsync();
 
     ListQueryResponse response = new(
       [.. result
@@ -33,9 +32,9 @@ public class CostumerController : ControllerBase
           new QueryResponse(
             qr.costumer.Id,
             qr.costumer.Name,
-            qr.costumer.Email.value,
+            qr.costumer.Email,
             qr.costumer.Phone,
-            qr.costumer.GetStatus()
+            qr.costumer.Status
           )
         )]
     );
@@ -44,9 +43,9 @@ public class CostumerController : ControllerBase
   }
   
   [HttpPost("create")]
-  public IActionResult CreateCostumer(CostumerRequestVo request)
+  public async Task<IActionResult> CreateCostumer(CostumerRequestVo request)
   {
-    var result = this._costumerService.Create(
+    var result = await this._costumerService.CreateAsync(
       request.Name,
       request.Email,
       request.Phone,
@@ -56,27 +55,28 @@ public class CostumerController : ControllerBase
     var response = new CostumerResponseVo(
       result.costumer.Id,
       result.costumer.Name,
-      result.costumer.GetStatus()
+      result.costumer.Status
     );
     
     return Ok(response);   
   }
 
-  [HttpPut("update/{id}")]
-  public IActionResult UpdateCostumer(string id, CostumerRequestVo request)
+  [HttpPut("{id}/update")]
+  public async Task<IActionResult> UpdateCostumer(string id, [FromBody] CostumerRequestVo request)
   {
-    var result = this._costumerService.Update(
+    var result = await this._costumerService.UpdateAsync(
       id,
       request.Name,
       request.Email,
       request.Phone,
-      request.Address
+      request.Address,
+      request.Status
     );
 
     var response = new CostumerResponseVo(
       result.costumer.Id,
       result.costumer.Name,
-      result.costumer.GetStatus()
+      result.costumer.Status
     );
     
     return Ok(response);   

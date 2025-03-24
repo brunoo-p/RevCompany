@@ -1,7 +1,8 @@
 using RevCompany.Domain.Entities.Costumers;
+using RevCompany.Infrastructure.Persistence.costumer;
 
 namespace RevCompany.Application.Services.Costumers;
 
 public record CostumerResult(
-  CostumerEntity costumer
+  CostumerDTO costumer
 );

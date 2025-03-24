@@ -1,8 +1,9 @@
+using RevCompany.Contracts.User;
 using RevCompany.Domain.Entities.User;
 
 namespace RevCompany.Application.Services.Authentication;
 
 public record AuthenticationResult(
-  User user,
+  UserDTO user,
   string Token
 );

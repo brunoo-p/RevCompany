@@ -6,7 +6,8 @@ using RevCompany.Infrastructure.DependencyInjection;
 var builder = WebApplication.CreateBuilder(args);
 
 
-builder.Services.AddControllers(options => options.Filters.Add<ErrorHandlingFilterAttribute>());
+// builder.Services.AddControllers(options => options.Filters.Add<ErrorHandlingFilterAttribute>());
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services

@@ -6,6 +6,6 @@ namespace RevCompany.Application.Services.Authentication;
 
 public interface IAuthenticationService
 {
-  AuthenticationResult Signin(string email, string password);
-  AuthenticationResult Signup(string firstName, string lastName, string email, string password);
+  Task<AuthenticationResult> Signin(string email, string password);
+  Task<AuthenticationResult> Signup(string firstName, string lastName, string email, string password);
 }

@@ -7,5 +7,6 @@ public record CostumerRequestVo(
   string Name,
   string Email,
   string Phone,
-  Address Address
+  Address Address,
+  string Status
 );

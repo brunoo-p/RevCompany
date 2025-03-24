@@ -1,0 +1,37 @@
+version: '3.8' # Postgres database
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres_container
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: yourpassword
+      POSTGRES_DB: revcompany
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/src/RevCompany.Infrastructure/Data/migrations:/docker-entrypoint-initdb.d
+    networks:
+      - revcompany_network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin_container
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com # Email para login no pgAdmin
+      PGADMIN_DEFAULT_PASSWORD: admin       # Senha para login no pgAdmin
+    ports:
+      - "5050:80" # Porta 5050 no host mapeada para a porta 80 no container
+    networks:
+      - revcompany_network
+
+volumes:
+  postgres_data:
+
+networks:
+  revcompany_network:
+    name: revcompany_custom_network
