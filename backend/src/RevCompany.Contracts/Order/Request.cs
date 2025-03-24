@@ -3,6 +3,6 @@ using RevCompany.Domain.Entities.Order;
 namespace RevCompany.Contracts.Order;
 
 public record OrderRequestVo(
-  Guid ClientId,
+  Guid CostumerId,
   List<Item> Items
 );
