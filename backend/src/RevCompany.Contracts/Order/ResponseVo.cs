@@ -2,8 +2,9 @@ using RevCompany.Domain.Entities.Order;
 
 namespace RevCompany.Contracts.Order;
 
-public record ResponseVo(
+public record OrderResponseVo(
   Guid OrderId,
-  Guid ClientId,
-  OrderStatusEnum Status = OrderStatusEnum.PROCESSING
+  Guid CostumerId,
+  decimal Amount,
+  string Status
 );

@@ -4,6 +4,7 @@ public class OrderBuilder
 {
   private Guid _costumerId;
   private List<Item> _items = new();
+  private decimal _amount = 0m;
 
   public static OrderBuilder Create()
   {
@@ -22,12 +23,25 @@ public class OrderBuilder
     return this;
   }
 
+  public OrderBuilder WithItemsList(List<Item> items)
+  {
+    foreach (var item in items)
+    {
+      _items.Add(item);
+    }
+    return this;
+  }
+
   public Order Build()
   {
+    foreach(var item in _items) {
+      _amount += item.UnitPrice;
+    }
     return new Order
     {
       CostumerId = _costumerId,
-      Items = _items
+      Items = _items,
+      Amount = _amount
     };
   }
 }

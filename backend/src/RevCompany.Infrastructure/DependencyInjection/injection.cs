@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.Extensions.Options;
+using RevCompany.Infrastructure.Persistence.order;
 
 namespace RevCompany.Infrastructure.DependencyInjection;
 
@@ -27,6 +28,7 @@ public static class Injection
     
     services.AddScoped<IUserRepository, UserRepository>();
     services.AddScoped<ICostumerRepository, CostumerRepository>();
+    services.AddScoped<IOrderRepository, OrderRepository>();
 
     return services;
   }
