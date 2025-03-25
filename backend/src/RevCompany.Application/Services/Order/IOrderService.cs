@@ -7,9 +7,8 @@ namespace RevCompany.Application.Services.Costumer;
 
 public interface IOrderService
 {
-  OrderResult Create(Guid costumerId, List<Item> items);
-  List<OrderResult> GetByCostumerId(string costumerId);
-  OrderResult GetById(string id);
-  OrderResult Update(string id, string status);
+  Task<OrderResult> Create(Guid costumerId, List<Item> items);
+  Task<List<OrderResult>> GetByCostumerId(string costumerId);
+  Task<OrderResult> Update(string id, string status);
 
 }

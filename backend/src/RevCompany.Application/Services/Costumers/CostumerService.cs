@@ -59,17 +59,20 @@ public class CostumerService : ICostumerService
 
   public async Task<CostumerResult> UpdateAsync(string id, string name, string email, string phone, Address address, string status)
   {
-    var costumerFound = await this.GetByIdAsync(id);
-    if(costumerFound is not CostumerResult) {
-      throw new Exception("Invalid costumer");
-    }
+    await this.GetByIdAsync(id);
 
     var costumer = new CostumerEntity(
       name, new Email(email), phone, address, Enum.Parse<CostumerStatusEnum>(status)
     );
 
     var updated = await _costumerRepository.UpdateAsync(costumer);
-   
-    return new CostumerResult(updated);
+    var costumerUpdated = new CostumerDTO(
+        new Guid(id),
+        updated.Name,
+        updated.Email,
+        updated.Phone,
+        updated.Address,
+        updated.Status);
+    return new CostumerResult(costumerUpdated);
   }
 }

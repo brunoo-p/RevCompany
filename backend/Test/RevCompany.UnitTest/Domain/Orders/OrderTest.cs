@@ -12,15 +12,15 @@ public class OrderTest
     
     var costumerId = Guid.NewGuid();
     var item1 = ItemBuilder.Create()
-      .WithProductId(Guid.NewGuid())
+      .WithOrderId(Guid.NewGuid())
       .WithQuantity(1)
-      .WithUnitPrice(Convert.ToDecimal(10))
+      .WithPrice(Convert.ToDecimal(10))
       .Build();
 
     var item2 = ItemBuilder.Create()
-      .WithProductId(Guid.NewGuid())
+      .WithOrderId(Guid.NewGuid())
       .WithQuantity(3)
-      .WithUnitPrice(Convert.ToDecimal(18))
+      .WithPrice(Convert.ToDecimal(18))
       .Build();
     
     var items = new List<Item> { item1, item2 };

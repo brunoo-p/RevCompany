@@ -23,9 +23,9 @@ public class OrderController : ControllerBase
   }
   
   [HttpPost("create")]
-  public IActionResult CreateOrder(OrderRequestVo request)
+  public async Task<IActionResult> CreateOrder(OrderRequestVo request)
   {
-    var result = this._orderService.Create(
+    var result = await this._orderService.Create(
       request.CostumerId,
       request.Items
     );
@@ -34,16 +34,16 @@ public class OrderController : ControllerBase
       result.order.Id,
       result.order.CostumerId,
       result.order.Amount,
-      result.order.GetStatus()
+      result.order.Status
     );
     
     return Ok(response);   
   }
 
   [HttpGet("list/{costumerId}")]
-  public IActionResult GetByCostumerId(string costumerId)
+  public async Task<IActionResult> GetByCostumerId(string costumerId)
   {
-    var orders = this._orderService.GetByCostumerId(costumerId);
+    var orders = await this._orderService.GetByCostumerId(costumerId);
 
     ListQueryResponse response = new(
       [.. orders
@@ -53,7 +53,7 @@ public class OrderController : ControllerBase
             qr.order.CostumerId,
             qr.order.Items,
             qr.order.Amount,
-            qr.order.GetStatus()
+            qr.order.Status
           )
         )]
     );

@@ -14,48 +14,34 @@ public class OrderService : IOrderService
     this._orderRepository = orderRepository;
   }
 
-  public OrderResult Create(Guid costumerId, List<Item> items)
+  public async Task<OrderResult> Create(Guid costumerId, List<Item> items)
   {
     
     var order = OrderBuilder.Create()
       .WithCostumerId(costumerId)
       .WithItemsList(items)
       .Build();
-    this._orderRepository.Create(order);
-    return new OrderResult(order);
+
+    var dto = await this._orderRepository.CreateAsync(order);
+    return new OrderResult(dto);
   }
 
-  public List<OrderResult> GetAll()
+  public async Task<List<OrderResult>> GetAll()
   {
-    var list = this._orderRepository.GetAll();
+    var list = await this._orderRepository.GetAll();
     return [.. list.Select(order => new OrderResult(order))];
   }
 
-  public List<OrderResult> GetByCostumerId(string costumerId)
+  public async Task<List<OrderResult>> GetByCostumerId(string costumerId)
   { 
-    var list = this._orderRepository.GetByCostumerId(costumerId);
+    var list = await this._orderRepository.GetByCostumerId(costumerId);
     return [.. list.Select(order => new OrderResult(order))];
     
   }
-
-  public OrderResult GetById(string id)
+    public async Task<OrderResult> Update(string id, string status)
   {
-    if (this._orderRepository.GetById(id) is not Order order) {
-      throw new Exception("not found");
-    };
-    
-    return new OrderResult(order);
-  }
-
-  public OrderResult Update(string id, string status)
-  {
-    var orderFound = this.GetById(id);
-    if(orderFound is not OrderResult) {
-      throw new Exception("Invalid costumer");
-    }
-
-    var orderUpdated = orderFound.order.UpdateStatus(status);
+    var updated = await _orderRepository.Update(id, status);
    
-    return new OrderResult(orderUpdated);
+    return new OrderResult(updated);
   }
 }

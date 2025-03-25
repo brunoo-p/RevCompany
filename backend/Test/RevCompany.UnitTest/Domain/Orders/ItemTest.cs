@@ -15,17 +15,17 @@ public class ItemTest
     var unitPrice = Convert.ToDecimal(18.56);
 
     var item = ItemBuilder.Create()
-      .WithProductId(productId)
+      .WithOrderId(productId)
       .WithQuantity(quantity)
-      .WithUnitPrice(unitPrice)
+      .WithPrice(unitPrice)
       .Build();
 
     item.Should().BeOfType<Item>();
     item.Should().NotBeNull();
-    item.ProductId.Should().Be(productId);
+    item.OrderId.Should().Be(productId);
     item.Quantity.Should().Be(quantity);
-    item.UnitPrice.Should().BeGreaterThan(0);
-    item.UnitPrice.Should().Be(unitPrice);
+    item.Price.Should().BeGreaterThan(0);
+    item.Price.Should().Be(unitPrice);
   
   }
 }

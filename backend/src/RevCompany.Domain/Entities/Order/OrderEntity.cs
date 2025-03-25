@@ -19,4 +19,9 @@ public class Order : Entity
     this.status = Enum.Parse<OrderStatusEnum>(status);
     return this;
   }
+
+  public void AddItem(Item item) {
+    Items.Add(item);
+    Amount += item.Price * item.Quantity;
+  }
 }
