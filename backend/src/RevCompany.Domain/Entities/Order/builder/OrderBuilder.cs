@@ -35,7 +35,7 @@ public class OrderBuilder
   public Order Build()
   {
     foreach(var item in _items) {
-      _amount += item.UnitPrice;
+      _amount += item.Price;
     }
     return new Order
     {

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Npgsql;
 using RevCompany.Application.Common.Interfaces.Persistence;
 using RevCompany.Domain.Entities.Costumer;
@@ -11,13 +12,16 @@ namespace RevCompany.Infrastructure.Persistence.costumer;
 public class CostumerRepository : ICostumerRepository
 {
   private readonly AppDataContext _dataContext;
+  private readonly ILogger<CostumerRepository> _logger;
 
   public CostumerRepository(
     AppDataContext dataContext,
-    IEnsureTableExistsService ensureTableExistService
+    IEnsureTableExistsService ensureTableExistService,
+     ILogger<CostumerRepository> logger
     )
   {
     this._dataContext = dataContext;
+    this._logger = logger;
     ensureTableExistService.execute(CreateAddressesTable.SQLTemplate);
     ensureTableExistService.execute(CreateTable.SQLTemplate);
   }
@@ -29,6 +33,8 @@ public class CostumerRepository : ICostumerRepository
     using var connection = _dataContext.GetConnection();
 
     try {
+      
+      _logger.LogInformation("Creating Costumer: {costumer}", costumer);
 
       await using (var addressCommand = new NpgsqlCommand(slqAddress, (NpgsqlConnection)connection))
       {
@@ -45,10 +51,12 @@ public class CostumerRepository : ICostumerRepository
 
     } catch(Exception ex) {
       _dataContext.Dispose();
+      _logger.LogError("Error to create a Costumer address: {error}", ex.Message);
       throw new Exception(ex.Message);
     }
 
     try {
+      
       await using (var costumerCommand = new NpgsqlCommand(sqlCostumer, (NpgsqlConnection)connection))
       {
         costumerCommand.Parameters.AddWithValue("@Id", costumer.Id);
@@ -71,6 +79,7 @@ public class CostumerRepository : ICostumerRepository
         
     }catch (Exception ex) {
       _dataContext.Dispose();
+      _logger.LogError("Error query all Costumer profile: {error}", ex.Message);
       throw new Exception(ex.Message);
     }
   }
@@ -81,6 +90,7 @@ public class CostumerRepository : ICostumerRepository
     var sql = ListAllActive.SQLTemplate;
 
     try {
+       _logger.LogInformation("Querying all costumers");
 
       using var connection = _dataContext.GetConnection();
       await using var command = new NpgsqlCommand(sql, (NpgsqlConnection)connection);
@@ -113,24 +123,53 @@ public class CostumerRepository : ICostumerRepository
       return costumers;
 
     } catch (Exception ex) {
+      _logger.LogError("Error query all Costumer: {error}", ex.Message);
       throw new Exception(ex.Message);
     }
   } 
 
 
-  public Task<CostumerDTO?> GetByIdAsync(string id)
+  public async Task<CostumerDTO?> GetByIdAsync(string id)
   {
-    // return _costumers.SingleOrDefault(costumer => costumer.Id.ToString() == id);
-    object address = new object();
+    var sql = QueryById.SQLTemplate;
+    Guid guidId = new Guid(id);
+    
+    try {
+    
+      _logger.LogInformation("Getting costumer by Id: {costumerId}", id);
+    
+      using var connection = _dataContext.GetConnection();
+    using var command = new NpgsqlCommand(sql, (NpgsqlConnection)connection);
 
-    return Task.FromResult<CostumerDTO?>(new CostumerDTO(
-      Guid.NewGuid(),
-      "john",
-      "email@email.com",
-      "111111111",
-      address,
-      CostumerStatusEnum.ACTIVE.ToString()
-    ));
+    command.Parameters.AddWithValue("@Id", guidId);
+
+    using var reader = await command.ExecuteReaderAsync();
+
+    if (await reader.ReadAsync())
+    {
+      return new CostumerDTO(
+        reader.GetGuid(0), // id
+          reader.GetString(1), // name
+          reader.GetString(2), // email
+          reader.GetString(3),
+          new Address(
+            reader.GetString(5),
+            reader.GetInt32(6), 
+            reader.GetString(7),
+            reader.GetString(8),
+            reader.GetString(9),
+            reader.GetString(10) 
+          ),
+          reader.GetString(4)
+      );
+    }
+
+    return null;
+
+    } catch (Exception ex) {
+      _logger.LogError("Error to query costumer by Id: {error}", ex.Message);
+      throw new Exception(ex.Message);
+    }
   }
 
   public async Task<CostumerDTO?> GetByEmail(string email)
@@ -176,6 +215,7 @@ public class CostumerRepository : ICostumerRepository
 
     try
     {
+      _logger.LogInformation("Updating Costumer: {costumerId}", costumer.Id);
 
       await using (var addressCommand = new NpgsqlCommand(sqlUpdateAddress, (NpgsqlConnection)connection, (NpgsqlTransaction)transaction))
       {
@@ -217,6 +257,7 @@ public class CostumerRepository : ICostumerRepository
     catch (Exception ex)
     {
       transaction.Rollback(); // rollback transactions
+      _logger.LogError("Error to update costumer: {error}", ex.Message);
       throw new Exception(ex.Message);
     }
   }

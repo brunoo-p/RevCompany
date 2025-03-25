@@ -2,15 +2,16 @@ namespace RevCompany.Domain.Entities.Order.builder;
 
 public class ItemBuilder
 {
-  private Guid _productId;
+  private Guid _orderId;
+  private string _name = "";
   private int _quantity;
-  private decimal _unitPrice;
+  private decimal _price;
 
   public static ItemBuilder Create() => new();
   
-  public ItemBuilder WithProductId(Guid productId)
+  public ItemBuilder WithOrderId(Guid productId)
   {
-    _productId = productId;
+    _orderId = productId;
     return this;
   }
 
@@ -20,14 +21,14 @@ public class ItemBuilder
     return this;
   }
 
-  public ItemBuilder WithUnitPrice(decimal unitPrice)
+  public ItemBuilder WithPrice(decimal price)
   {
-    _unitPrice = unitPrice;
+    _price = price;
     return this;
   }
 
   public Item Build()
   {
-    return new Item(_productId, _quantity, _unitPrice);
+    return new Item(_name, _orderId, _quantity, _price);
   }
 }

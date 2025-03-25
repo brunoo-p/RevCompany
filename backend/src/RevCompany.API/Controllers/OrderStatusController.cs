@@ -23,9 +23,9 @@ public class OrderStatusController : ControllerBase
   }
   
   [HttpPut("{id}")]
-  public IActionResult UpdateOrderStatus(string id, string newStatus)
+  public async Task<IActionResult> UpdateOrderStatus(string id, string newStatus)
   {
-    var result = this._orderService.Update(
+    var result = await this._orderService.Update(
       id,
       newStatus
     );
@@ -34,7 +34,7 @@ public class OrderStatusController : ControllerBase
       result.order.Id,
       result.order.CostumerId,
       result.order.Amount,
-      result.order.GetStatus()
+      result.order.Status
     );
     
     return Ok(response);   
