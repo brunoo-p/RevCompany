@@ -4,7 +4,7 @@ import { SignupComponent } from './components/auth/signup/signup.component';
 
 export const routes: Routes = [
   {
-    path: "login",
+    path: '',
     component: SigninComponent
   },
   {
@@ -13,6 +13,6 @@ export const routes: Routes = [
   },
   {
     path: "**",
-    redirectTo: "login"
+    redirectTo: ''
   }
 ];

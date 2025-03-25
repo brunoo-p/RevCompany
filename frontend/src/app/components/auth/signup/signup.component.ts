@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { LoginLayoutComponent } from "../login-layout/login-layout.component";
 import { PrimaryInputComponent } from "../fields/primary-input/primary-input.component";
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule,  Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { AuthenticationFacade } from '../facade/authentication.facade';
 
 
 @Component({
@@ -15,6 +16,7 @@ export class SignupComponent {
   registerForm: FormGroup;
 
   constructor(
+    private readonly authFacade: AuthenticationFacade,
     private readonly router: Router
   ) {
     this.registerForm = new FormGroup({
@@ -26,11 +28,14 @@ export class SignupComponent {
     })
   }
 
-  submit(){
-    console.log('submit');
+  async submit(): Promise<void>{
+    if(this.registerForm.valid) {
+      await this.authFacade.instance().signUp(this.registerForm.value);
+      this.router.navigate(['']);
+    }
   }
   
   navigate(){
-    this.router.navigate(["signup"])
+    this.router.navigate(["login"])
   }
 }
