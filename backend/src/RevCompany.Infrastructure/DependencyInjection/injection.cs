@@ -31,6 +31,7 @@ public static class Injection
     services.AddScoped<IUserRepository, UserRepository>();
     services.AddScoped<ICostumerRepository, CostumerRepository>();
     services.AddScoped<IOrderRepository, OrderRepository>();
+    services.AddScoped<ItemRepository, ItemRepository>();
     services.AddScoped<IEnsureTableExistsService, EnsureTableExistsService>();
     
     services.AddScoped<AppDataContext>(provider => 

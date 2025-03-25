@@ -3,6 +3,7 @@ import { PrimaryInputComponent } from "../fields/primary-input/primary-input.com
 import { LoginLayoutComponent } from "../login-layout/login-layout.component";
 import { Router } from '@angular/router';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AuthenticationFacade } from '../facade/authentication.facade';
 
 @Component({
   selector: 'app-signin',
@@ -14,6 +15,7 @@ export class SigninComponent {
   loginForm!: FormGroup;
 
   constructor(
+    private readonly authFacade: AuthenticationFacade,
     private readonly router: Router
   ){
     this.loginForm = new FormGroup({
@@ -22,8 +24,12 @@ export class SigninComponent {
     })
   }
 
-  submit(){
-    console.log('submit');
+  async submit() : Promise<void>{
+
+    if(this.loginForm.valid) {
+      await this.authFacade.instance().signIn(this.loginForm.value);
+      this.router.navigate(['']);
+    }
   }
 
   navigate(){
