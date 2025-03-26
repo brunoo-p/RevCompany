@@ -1,13 +1,14 @@
-version: '3.8' # Postgres database
+version: '3.8'
 
 services:
+  #database
   postgres:
     image: postgres:15
     container_name: postgres_container
     restart: always
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: yourpassword
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
       POSTGRES_DB: revcompany
     ports:
       - "5432:5432"
@@ -16,16 +17,49 @@ services:
       - ./backend/src/RevCompany.Infrastructure/Data/migrations:/docker-entrypoint-initdb.d
     networks:
       - revcompany_network
-
+  
+  #database ui
   pgadmin:
     image: dpage/pgadmin4
     container_name: pgadmin_container
     restart: always
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com # Email para login no pgAdmin
-      PGADMIN_DEFAULT_PASSWORD: admin       # Senha para login no pgAdmin
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com # Email login pgAdmin
+      PGADMIN_DEFAULT_PASSWORD: admin       # Password login pgAdmin
     ports:
-      - "5050:80" # Porta 5050 no host mapeada para a porta 80 no container
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - revcompany_network
+
+  #api
+  web_api_container:
+    build:
+      context: backend
+      dockerfile: ./src/RevCompany.API/Dockerfile
+    container_name: web_api_container
+    restart: always
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:5117
+      ConnectionStrings__DefaultConnection: "Host=postgres_container;Database=revcompany;Username=postgres;Password=yourpassword"
+    ports:
+      - "5117:5117"
+    depends_on:
+      - postgres
+    networks:
+      - revcompany_network
+
+  #ui
+  ui_container:
+    build:
+      context: frontend
+      dockerfile: ./Dockerfile
+    container_name: frontend_container
+    restart: always
+    ports:
+      - "4200:4200"
     networks:
       - revcompany_network
 
@@ -34,4 +68,5 @@ volumes:
 
 networks:
   revcompany_network:
+    driver: bridge
     name: revcompany_custom_network
