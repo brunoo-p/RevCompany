@@ -1,1 +1,11 @@
-<p>home works!</p>
+<div>
+  <div>
+    <app-left-sidebar
+      [isLeftSidebarCollapsed]="isLeftSidebarCollapsed()"
+      (changeIsLeftSidebarCollapsed)="changeIsLeftSidebarCollapsed($event)"
+    />
+    
+    <main>main</main>
+
+  </div>
+</div>
