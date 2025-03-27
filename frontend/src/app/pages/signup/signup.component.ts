@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { LoginLayoutComponent } from "../login-layout/login-layout.component";
-import { PrimaryInputComponent } from "../fields/primary-input/primary-input.component";
+import { LoginLayoutComponent } from "../../components/auth/login-layout/login-layout.component";
+import { PrimaryInputComponent } from "../../components/auth/fields/primary-input/primary-input.component";
 import { FormControl, FormGroup, ReactiveFormsModule,  Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthenticationFacade } from '../facade/authentication.facade';
+import { AuthenticationFacade } from '../../components/auth/facade/authentication.facade';
 
 
 @Component({
@@ -25,17 +25,22 @@ export class SignupComponent {
       email: new FormControl('', [Validators.required, Validators.email]),
       password: new FormControl('', [Validators.required, Validators.minLength(6)])
 
-    })
+    });
   }
 
   async submit(): Promise<void>{
     if(this.registerForm.valid) {
       await this.authFacade.instance().signUp(this.registerForm.value);
-      this.router.navigate(['']);
     }
   }
   
   navigate(){
-    this.router.navigate(["login"])
+    this.router.navigate(['login']);
+  }
+
+  handleKeyUp(e: KeyboardEvent){
+    if(e.keyCode === 13){
+      this.submit();
+    }
   }
 }

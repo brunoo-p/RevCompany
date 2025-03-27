@@ -3,6 +3,7 @@ import { UserMapperService } from '../user/mappers/userMapper.service';
 import { User } from '../user/user';
 import { StorageManagerService } from '../utils/storage/storageManager.service';
 import { StorageKey } from '../utils/storage/storage-keys';
+import { AccessToken } from './token/access-token';
 
 @Injectable({
   providedIn: 'root',
@@ -16,7 +17,7 @@ export class AuthenticationMapperService {
     private readonly _storeManagerService: StorageManagerService
   ) {}
 
-  private storeToken(token: string): void {
+  private storeToken(token: AccessToken): void {
     this._storeManagerService.setItem(this.tokenKey, token);
   }
   
@@ -25,9 +26,18 @@ export class AuthenticationMapperService {
   }
   
   map(data: any): User {
-    if(data?.token) {
+    if(data?.token) {      
+      this.mapAccessToken(data.token);
       this.storeToken(data.token);
     }
     return this.mapUser(data);
+  }
+
+  private mapAccessToken(token: any) {
+    return new AccessToken(
+      token.value,
+      new Date(),
+      token.validUntil
+    )
   }
 }

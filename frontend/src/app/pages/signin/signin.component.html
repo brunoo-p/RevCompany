@@ -13,6 +13,7 @@
           type="email"
           label="Email"
           placeholder="johndoe@gmail.com"
+          (keyup)="handleKeyUp($event)"
       >
           <img src="assets/email-icon.svg" alt="icon" />
       </app-primary-input>
@@ -22,6 +23,7 @@
           type="password"
           label="Your Password"
           placeholder="********"
+          (keyup)="handleKeyUp($event)"
       >
       <img src="assets/password-icon.svg" alt="icon" />
     </app-primary-input>

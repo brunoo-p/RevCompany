@@ -1,3 +1,5 @@
+using RevCompany.Domain.Entities.Token;
+
 namespace RevCompany.Contracts.Api.Response;
 
 public record AuthenticationResponseVo(
@@ -5,5 +7,5 @@ public record AuthenticationResponseVo(
     string FirstName,
     string LastName,
     string Email,
-    string Token
+    AccessToken AccessToken
 );
