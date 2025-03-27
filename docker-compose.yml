@@ -34,34 +34,34 @@ services:
       - revcompany_network
 
   #api
-  # web_api_container:
-  #   build:
-  #     context: backend
-  #     dockerfile: ./src/RevCompany.API/Dockerfile
-  #   container_name: web_api_container
-  #   restart: always
-  #   environment:
-  #     ASPNETCORE_ENVIRONMENT: Development
-  #     ASPNETCORE_URLS: http://+:5117
-  #     ConnectionStrings__DefaultConnection: "Host=postgres_container;Database=revcompany;Username=postgres;Password=yourpassword"
-  #   ports:
-  #     - "5117:5117"
-  #   depends_on:
-  #     - postgres
-  #   networks:
-  #     - revcompany_network
+  web_api_container:
+    build:
+      context: backend
+      dockerfile: ./src/RevCompany.API/Dockerfile
+    container_name: web_api_container
+    restart: always
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:5117
+      ConnectionStrings__DefaultConnection: "Host=postgres_container;Database=revcompany;Username=postgres;Password=yourpassword"
+    ports:
+      - "5117:5117"
+    depends_on:
+      - postgres
+    networks:
+      - revcompany_network
 
   #ui
-  # ui_container:
-  #   build:
-  #     context: frontend
-  #     dockerfile: ./Dockerfile
-  #   container_name: frontend_container
-  #   restart: always
-  #   ports:
-  #     - "4200:4200"
-  #   networks:
-  #     - revcompany_network
+  ui_container:
+    build:
+      context: frontend
+      dockerfile: ./Dockerfile
+    container_name: frontend_container
+    restart: always
+    ports:
+      - "4200:4200"
+    networks:
+      - revcompany_network
 
 volumes:
   postgres_data:
