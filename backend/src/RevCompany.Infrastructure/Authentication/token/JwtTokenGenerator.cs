@@ -7,6 +7,7 @@ using Microsoft.VisualBasic;
 using RevCompany.Application.Common.Interfaces.Authentication;
 using RevCompany.Application.Common.Interfaces.Services.token;
 using RevCompany.Contracts.User;
+using RevCompany.Domain.Entities.Token;
 using RevCompany.Domain.Entities.User;
 using RevCompany.Infrastructure.Authentication.token;
 
@@ -25,7 +26,7 @@ public class JwtTokenGenerator : IJwtTokenGenerator
     this._dateTimeProvider = dateTimeProvider;
     this._jwtSettings = _jwtOptions.Value;
   }
-  public string GenerateToken(UserDTO user)
+  public AccessToken GenerateToken(UserDTO user)
   {
     var signingCredentials = new SigningCredentials(
       new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this._jwtSettings.Secret)),
@@ -47,7 +48,12 @@ public class JwtTokenGenerator : IJwtTokenGenerator
       signingCredentials: signingCredentials
     );
 
-    return new JwtSecurityTokenHandler().WriteToken(securityToken);
+    var accessToken = new AccessToken(
+      new JwtSecurityTokenHandler().WriteToken(securityToken),
+      _dateTimeProvider.UtcNow.AddHours(this._jwtSettings.ExpiryMinutes)
+    );
+
+    return accessToken;
     
   }
 }

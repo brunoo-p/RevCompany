@@ -1,8 +1,8 @@
-import { LoginRequest } from "../domain/auth/loginRequest";
-import { RegisterRequest } from "../domain/auth/registerRequest";
+import { BLoginRequest } from "../domain/auth/loginRequest";
+import { BRegisterRequest } from "../domain/auth/registerRequest";
 
 
 export interface IAuth {
-  signIn: (login: LoginRequest) => Promise<any>;
-  signUp: (register: RegisterRequest) => Promise<any>;
+  signIn: (login: BLoginRequest) => Promise<any>;
+  signUp: (register: BRegisterRequest) => Promise<any>;
 }

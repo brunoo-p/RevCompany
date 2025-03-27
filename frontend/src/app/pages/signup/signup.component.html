@@ -30,7 +30,7 @@
           inputName="email"
           type="email"
           label="Email"
-          placeholder="johndoe@gmail.com"
+          placeholder="johndoe@gmail.com"   
       >
       <img src="/assets/email-icon.svg" alt="icon" />
       </app-primary-input>
@@ -40,6 +40,7 @@
           type="password"
           label="Password"
           placeholder="********"
+          (keyup)="handleKeyUp($event)"
       >
       <img src="/assets/password-icon.svg" alt="icon" />
     </app-primary-input>

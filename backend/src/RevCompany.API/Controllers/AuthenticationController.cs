@@ -30,11 +30,11 @@ public class Authentication : ControllerBase
     var result = await this._authenticationService.Signin(request.Email, request.Password);
         
     var response = new AuthenticationResponseVo(
-      result.user.Id,
-      result.user.FirstName,
-      result.user.LastName,
-      result.user.Email,
-      result.Token);
+      result.User.Id,
+      result.User.FirstName,
+      result.User.LastName,
+      result.User.Email,
+      result.AccessToken);
         
     return Ok(response);
   }
@@ -50,11 +50,11 @@ public class Authentication : ControllerBase
       request.Password);
         
     var response = new AuthenticationResponseVo(
-      result.user.Id,
-      result.user.FirstName,
-      result.user.LastName,
-      result.user.Email,
-      result.Token);
+      result.User.Id,
+      result.User.FirstName,
+      result.User.LastName,
+      result.User.Email,
+      result.AccessToken);
         
     return Ok(response);
   }

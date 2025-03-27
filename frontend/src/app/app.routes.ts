@@ -1,10 +1,17 @@
 import { Routes } from '@angular/router';
-import { SigninComponent } from './components/auth/signin/signin.component';
-import { SignupComponent } from './components/auth/signup/signup.component';
+import { SigninComponent } from './pages/signin/signin.component';
+import { SignupComponent } from './pages/signup/signup.component';
+import { HomeComponent } from './pages/home/home.component';
+import authGuard from './services/api/auth/guards/auth.guard';
 
 export const routes: Routes = [
   {
     path: '',
+    component: HomeComponent,
+    canActivate: [authGuard]
+  },
+  {
+    path: 'login',
     component: SigninComponent
   },
   {
@@ -13,6 +20,7 @@ export const routes: Routes = [
   },
   {
     path: "**",
-    redirectTo: ''
+    pathMatch: 'full',
+    redirectTo: 'login'
   }
 ];

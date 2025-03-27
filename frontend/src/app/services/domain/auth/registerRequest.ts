@@ -1,17 +1,14 @@
-import { Email } from "./credential/email";
-import { Password } from "./credential/password";
-
-export class RegisterRequest {
+export class BRegisterRequest {
   public firstName: string;
   public lastName: string;
-  public email: Email;
-  public password: Password;
+  public email: string;
+  public password: string;
 
   constructor(
     firstName: string,
     lastName: string,
-    email: Email,
-    password: Password,
+    email: string,
+    password: string,
   ) {
 
     this.firstName = firstName;

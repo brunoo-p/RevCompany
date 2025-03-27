@@ -2,6 +2,7 @@ using RevCompany.Application.Common.Interfaces.Authentication;
 using RevCompany.Application.Common.Interfaces.Persistence;
 using RevCompany.Contracts.User;
 using RevCompany.Domain.Entities.common;
+using RevCompany.Domain.Entities.Token;
 using RevCompany.Domain.Entities.User;
 
 namespace RevCompany.Application.Services.Authentication;
@@ -47,7 +48,7 @@ public class AuthenticationService : IAuthenticationService
   {
   
     if (await _userRepository.GetUserByEmailAsync(email) is not null) {
-      return null;
+      throw new Exception("That email cannot be registered");
     };
 
     Email userEmail = new Email(email);
@@ -58,7 +59,7 @@ public class AuthenticationService : IAuthenticationService
     return await Signin(user.Email.value, user.Password);
   }
 
-  private string GenerateToken(UserDTO user) {
+  private AccessToken GenerateToken(UserDTO user) {
 
     return _jwtTokenGenerator.GenerateToken(user);
 
