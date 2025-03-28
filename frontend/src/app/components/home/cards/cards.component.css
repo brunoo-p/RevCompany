@@ -1,0 +1,45 @@
+.container {
+  position: relative;
+  width: 100%;
+  padding: 20px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-gap: 1.5rem;
+}
+
+.container .card {
+  position: relative;
+  background: #fff;
+  justify-content: space-between;
+  cursor: pointer;
+  padding: 30px;
+  box-shadow: 0 7px 25px rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+}
+
+.container .card .card-value {
+  position: relative;
+  font-weight: 500;
+  font-size: 2.5rem;
+  color: #012a5b;
+}
+.container .card .card-text {
+  color: #27282c;
+  font-size: 1.1rem;
+  margin-top: 5px
+}
+.container .card .card-icon {
+  font-size: 3rem;
+  color: #27282c;
+}
+
+.container .card:hover {
+  background: #012a5b;
+  transition: .3s ease-in-out;
+}
+
+.container .card:hover .card-value
+.container .card:hover .card-text
+.container .card:hover .card-icon {
+  color: #fff;
+}
