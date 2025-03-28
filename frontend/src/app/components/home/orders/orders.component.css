@@ -1,0 +1,105 @@
+.details {
+  position: relative;
+  width: 100%;
+  padding: 20px;
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  grid-gap: 30px;
+  margin-top: 10px;
+}
+
+.details .recent-order {
+  position: relative;
+  display: grid;
+  min-height: 500px;
+  background: #fff;
+  padding: 20px;
+  box-shadow: 0 7px 25px rgba(0, 0, 0, 0.08);
+  border-radius: 20px;
+}
+
+.details .card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.card-header h2 {
+  font-weight: 600;
+  color: #012a5b;
+}
+
+.card-header .link {
+  position: relative;
+  padding: 5px 10px;
+  background: #012a5b;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 8px;
+}
+
+.details table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  flex-direction: column;
+}
+
+.details table thead td {
+  font-weight: 600;
+}
+.details .recent-order table tr {
+  color: #27282c;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  height: 20px;
+}
+.details .recent-order table tr:last-child {
+  border-bottom: none;
+}
+.details .recent-order table tbody tr:hover {
+  background: #012a5b;
+  color: #fff;
+}
+.details .recent-order table tr td{
+  padding: 10px;
+}
+.details .recent-order table tr td span{
+  padding: 6px;
+}
+.details .recent-order table tr td:last-child {
+  text-align: end;
+}
+.details .recent-order table tr td:nth-child(2) {
+  text-align: end;
+}
+.details .recent-order table tr td:nth-child(3) {
+  text-align: center;
+}
+
+.status.processing {
+  padding: 2px 4px;
+  background: #e9b10a;
+  color: #fff;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+
+.status.returned {
+  padding: 2px 4px;
+  background: #f00;
+  color: #fff;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.status.done {
+  padding: 2px 4px;
+  background: #8de02c;
+  color: #fff;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+}
