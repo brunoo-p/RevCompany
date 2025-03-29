@@ -60,4 +60,12 @@ public class OrderController : ControllerBase
     
     return Ok(response);   
   }
+
+  [HttpDelete("{id}")]
+  public ActionResult DeleteOrder([FromRoute] Guid orderId)
+  {
+    this._orderService.Delete(orderId);
+
+    return Ok();
+  }  
 }

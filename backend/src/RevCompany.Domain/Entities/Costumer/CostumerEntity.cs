@@ -9,7 +9,7 @@ public class CostumerEntity(string name, Email email, string phone, Address addr
   public string Name { get; private set; } = name;
   public Email Email { get; private set; } = email;
   public string Phone { get; private set; } = phone;
-  public Address Address { get; private set; } = address;
+  public Address? Address { get; private set; } = address;
   public CostumerStatusEnum Status { get; private set; } = status;
 
   public string GetStatus() {

@@ -10,5 +10,6 @@ public interface IOrderService
   Task<OrderResult> Create(Guid costumerId, List<Item> items);
   Task<List<OrderResult>> GetByCostumerId(string costumerId);
   Task<OrderResult> Update(string id, string status);
+  void Delete(Guid orderId);
 
 }

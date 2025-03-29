@@ -44,4 +44,9 @@ public class OrderService : IOrderService
    
     return new OrderResult(updated);
   }
+
+   public void Delete(Guid orderId)
+  {
+    this._orderRepository.Delete(orderId);
+  }
 }

@@ -7,8 +7,8 @@ namespace RevCompany.Application.Services.Costumer;
 public interface ICostumerService
 {
   Task<CostumerResult> CreateAsync(string name, string email, string phone, Address address);
-  Task<List<CostumerResult>> GetAllAsync();
-  Task<CostumerResult> GetByIdAsync(string id);
-  Task<CostumerResult> UpdateAsync(string id, string name, string email, string phone, Address address, string status);
-
+  Task<List<CostumerResult>> GetAllAsync(CostumerQueryRequest? request);
+  Task<CostumerResult> GetByIdAsync(Guid id);
+  Task<CostumerResult> UpdateAsync(Guid id, string name, string email, string phone, Address address);
+  void Delete(string costumerId);
 }
