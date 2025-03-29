@@ -1,9 +1,10 @@
-using Microsoft.Extensions.Logging;
 using Npgsql;
 using RevCompany.Application.Common.Interfaces.Persistence;
+using RevCompany.Contracts.Costumer.valueObject;
 using RevCompany.Domain.Entities.Costumer;
 using RevCompany.Domain.Entities.Costumers;
 using RevCompany.Infrastructure.Data;
+using RevCompany.Infrastructure.Persistence.costumer.mappers;
 using RevCompany.Infrastructure.Persistence.costumer.sqlTemplates;
 using RevCompany.Infrastructure.Persistence.costumer.sqlTemplates.address;
 
@@ -12,16 +13,14 @@ namespace RevCompany.Infrastructure.Persistence.costumer;
 public class CostumerRepository : ICostumerRepository
 {
   private readonly AppDataContext _dataContext;
-  private readonly ILogger<CostumerRepository> _logger;
 
   public CostumerRepository(
     AppDataContext dataContext,
-    IEnsureTableExistsService ensureTableExistService,
-     ILogger<CostumerRepository> logger
+    IEnsureTableExistsService ensureTableExistService
     )
   {
     this._dataContext = dataContext;
-    this._logger = logger;
+    
     ensureTableExistService.execute(CreateAddressesTable.SQLTemplate);
     ensureTableExistService.execute(CreateTable.SQLTemplate);
   }
@@ -33,8 +32,6 @@ public class CostumerRepository : ICostumerRepository
     using var connection = _dataContext.GetConnection();
 
     try {
-      
-      _logger.LogInformation("Creating Costumer: {costumer}", costumer);
 
       await using (var addressCommand = new NpgsqlCommand(slqAddress, (NpgsqlConnection)connection))
       {
@@ -50,9 +47,10 @@ public class CostumerRepository : ICostumerRepository
       }
 
     } catch(Exception ex) {
-      _dataContext.Dispose();
-      _logger.LogError("Error to create a Costumer address: {error}", ex.Message);
       throw new Exception(ex.Message);
+    
+    } finally {
+      _dataContext.Dispose();
     }
 
     try {
@@ -78,9 +76,10 @@ public class CostumerRepository : ICostumerRepository
         costumer.GetStatus());
         
     }catch (Exception ex) {
-      _dataContext.Dispose();
-      _logger.LogError("Error query all Costumer profile: {error}", ex.Message);
       throw new Exception(ex.Message);
+    
+    } finally {
+      _dataContext.Dispose();
     }
   }
 
@@ -90,7 +89,6 @@ public class CostumerRepository : ICostumerRepository
     var sql = ListAllActive.SQLTemplate;
 
     try {
-       _logger.LogInformation("Querying all costumers");
 
       using var connection = _dataContext.GetConnection();
       await using var command = new NpgsqlCommand(sql, (NpgsqlConnection)connection);
@@ -99,23 +97,9 @@ public class CostumerRepository : ICostumerRepository
 
       while (await reader.ReadAsync())
       {
-        var address = new Address(
-          reader.GetString(6), // Street
-          reader.GetInt32(7),  // Number
-          reader.GetString(8), // Neighborhood
-          reader.GetString(9), // City
-          reader.GetString(10), // State
-          reader.GetString(11)  // ZipCode
-        );
+        var address = CustomerPersistenceResponseMapper.MapCostumerAddress(reader);
+        var costumer = CustomerPersistenceResponseMapper.MapCostumer(reader, address);
 
-        var costumer = new CostumerDTO(
-          reader.GetGuid(0), // ID
-          reader.GetString(1), // Name
-          reader.GetString(2), // Email
-          reader.GetString(3), // Phone
-          address,
-          reader.GetString(4) // Status
-        );
         costumers.Add(costumer);
         
       }
@@ -123,52 +107,40 @@ public class CostumerRepository : ICostumerRepository
       return costumers;
 
     } catch (Exception ex) {
-      _logger.LogError("Error query all Costumer: {error}", ex.Message);
       throw new Exception(ex.Message);
+    
+    } finally {
+      _dataContext.Dispose();
     }
   } 
 
 
-  public async Task<CostumerDTO?> GetByIdAsync(string id)
+  public async Task<CostumerQueryByIdVo?> GetByIdAsync(Guid id)
   {
     var sql = QueryById.SQLTemplate;
-    Guid guidId = new Guid(id);
     
     try {
-    
-      _logger.LogInformation("Getting costumer by Id: {costumerId}", id);
-    
+  
       using var connection = _dataContext.GetConnection();
-    using var command = new NpgsqlCommand(sql, (NpgsqlConnection)connection);
+      using var command = new NpgsqlCommand(sql, (NpgsqlConnection)connection);
 
-    command.Parameters.AddWithValue("@Id", guidId);
+      command.Parameters.AddWithValue("@Id", id);
 
-    using var reader = await command.ExecuteReaderAsync();
+      using var reader = await command.ExecuteReaderAsync();
 
-    if (await reader.ReadAsync())
-    {
-      return new CostumerDTO(
-        reader.GetGuid(0), // id
-          reader.GetString(1), // name
-          reader.GetString(2), // email
-          reader.GetString(3),
-          new Address(
-            reader.GetString(5),
-            reader.GetInt32(6), 
-            reader.GetString(7),
-            reader.GetString(8),
-            reader.GetString(9),
-            reader.GetString(10) 
-          ),
-          reader.GetString(4)
-      );
-    }
+      if (await reader.ReadAsync())
+      {
+        var address = CustomerPersistenceResponseMapper.MapCostumerAddressQueryById(reader);
+        return CustomerPersistenceResponseMapper.MapCostumerQueryById(reader, address);
+      }
 
-    return null;
+      return null;
 
     } catch (Exception ex) {
-      _logger.LogError("Error to query costumer by Id: {error}", ex.Message);
       throw new Exception(ex.Message);
+    
+    } finally {
+      _dataContext.Dispose();
     }
   }
 
@@ -191,74 +163,101 @@ public class CostumerRepository : ICostumerRepository
           reader.GetString(2), // email
           reader.GetString(3),
           new Address(
-            reader.GetString(4),
-            reader.GetInt32(5), 
-            reader.GetString(6),
+            reader.GetString(5),
+            reader.GetInt32(6), 
             reader.GetString(7),
             reader.GetString(8),
-            reader.GetString(9) 
+            reader.GetString(9),
+            reader.GetString(10)
           ),
-          reader.GetString(10)
+          reader.GetString(4) 
       );
     }
 
     return null;
   }
 
-  public async Task<CostumerDTO> UpdateAsync(CostumerEntity costumer)
+  public async Task<CostumerDTO> UpdateAsync(Guid originalId, CostumerEntity update, Guid addressId)
   {
     var sqlUpdateAddress = UpdateAddress.SQLTemplate;
     var sqlUpdateCostumer = UpdateCostumer.SQLTemplate;
 
     using var connection = _dataContext.GetConnection(); 
-    using var transaction = connection.BeginTransaction(); // Start a transaction
+    using var transaction = connection.BeginTransaction();
 
     try
     {
-      _logger.LogInformation("Updating Costumer: {costumerId}", costumer.Id);
 
-      await using (var addressCommand = new NpgsqlCommand(sqlUpdateAddress, (NpgsqlConnection)connection, (NpgsqlTransaction)transaction))
-      {
-        addressCommand.Parameters.AddWithValue("@AddressId", costumer.Address.Id);
-        addressCommand.Parameters.AddWithValue("@Street", costumer.Address.Street);
-        addressCommand.Parameters.AddWithValue("@Number", costumer.Address.Number);
-        addressCommand.Parameters.AddWithValue("@City", costumer.Address.City);
-        addressCommand.Parameters.AddWithValue("@State", costumer.Address.State);
-        addressCommand.Parameters.AddWithValue("@Country", costumer.Address.Country);
-        addressCommand.Parameters.AddWithValue("@ZipCode", costumer.Address.ZipCode);
+      try {
+
+        await using var addressCommand = new NpgsqlCommand(sqlUpdateAddress, (NpgsqlConnection)connection, (NpgsqlTransaction)transaction);
+        addressCommand.Parameters.AddWithValue("@AddressId", addressId);
+        addressCommand.Parameters.AddWithValue("@Street", update.Address.Street);
+        addressCommand.Parameters.AddWithValue("@Number", update.Address.Number);
+        addressCommand.Parameters.AddWithValue("@City", update.Address.City);
+        addressCommand.Parameters.AddWithValue("@State", update.Address.State);
+        addressCommand.Parameters.AddWithValue("@Country", update.Address.Country);
+        addressCommand.Parameters.AddWithValue("@ZipCode", update.Address.ZipCode);
 
         await addressCommand.ExecuteNonQueryAsync();
-      }
 
-      await using (var costumerCommand = new NpgsqlCommand(sqlUpdateCostumer, (NpgsqlConnection)connection, (NpgsqlTransaction)transaction))
+      } catch (Exception ex)
       {
-        costumerCommand.Parameters.AddWithValue("@Id", costumer.Id);
-        costumerCommand.Parameters.AddWithValue("@Name", costumer.Name);
-        costumerCommand.Parameters.AddWithValue("@Email", costumer.Email.value);
-        costumerCommand.Parameters.AddWithValue("@Phone", costumer.Phone);
-        costumerCommand.Parameters.AddWithValue("@AddressId", costumer.Address.Id);
-        costumerCommand.Parameters.AddWithValue("@Status", costumer.GetStatus());
-
-        await costumerCommand.ExecuteNonQueryAsync();
+        throw new Exception(ex.Message);
       }
 
-      // Commit the transaction
+      await using var costumerCommand = new NpgsqlCommand(sqlUpdateCostumer, (NpgsqlConnection)connection, (NpgsqlTransaction)transaction);
+      costumerCommand.Parameters.AddWithValue("@Id", originalId);
+      costumerCommand.Parameters.AddWithValue("@Name", update.Name);
+      costumerCommand.Parameters.AddWithValue("@Email", update.Email.value);
+      costumerCommand.Parameters.AddWithValue("@Phone", update.Phone);
+      costumerCommand.Parameters.AddWithValue("@AddressId", addressId);
+
+      await costumerCommand.ExecuteNonQueryAsync();
+
       transaction.Commit();
 
       return new CostumerDTO(
-        costumer.Id,
-        costumer.Name,
-        costumer.Email.value,
-        costumer.Phone,
-        costumer.Address,
-        costumer.GetStatus()
+        originalId,
+        update.Name,
+        update.Email.value,
+        update.Phone,
+        update.Address,
+        update.GetStatus()
       );
-    }
-    catch (Exception ex)
+    
+    } catch (Exception ex)
     {
-      transaction.Rollback(); // rollback transactions
-      _logger.LogError("Error to update costumer: {error}", ex.Message);
+      transaction.Rollback();
       throw new Exception(ex.Message);
+    
+    } finally {
+      _dataContext.Dispose();
+    }
+  }
+
+  public async void Delete(Guid costumerId)
+  {
+    var sqlDeleteCostumer = InactivateCostumer.SQLTemplate;
+    using var connection = _dataContext.GetConnection();
+
+    try {
+
+      await using var costumerCommand = new NpgsqlCommand(sqlDeleteCostumer, (NpgsqlConnection)connection);
+      
+      string inactiveStatus = CostumerStatusEnum.INACTIVE.ToString();
+      costumerCommand.Parameters.AddWithValue("@Status", inactiveStatus);
+      costumerCommand.Parameters.AddWithValue("@Id", costumerId);
+
+      await costumerCommand.ExecuteNonQueryAsync();
+
+      return;
+      
+    } catch(Exception ex) {
+      throw new Exception(ex.Message);
+    
+    } finally {
+      _dataContext.Dispose();
     }
   }
 }

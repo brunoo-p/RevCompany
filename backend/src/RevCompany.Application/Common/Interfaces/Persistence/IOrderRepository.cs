@@ -10,6 +10,7 @@ public interface IOrderRepository
   Task<OrderDTO> CreateAsync(Order order);
   Task<IReadOnlyList<OrderDTO>> GetAll();
   Task<List<OrderDTO>> GetByCostumerId(string costumerId);
- Task<OrderDTO> Update(string id, string order); 
+  Task<OrderDTO> Update(string id, string order);
+  void Delete(Guid orderId);
 
 }

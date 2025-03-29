@@ -8,7 +8,6 @@ public static class UpdateCostumer
       name = @Name,
       email = @Email,
       phone = @Phone,
-      address_id = @AddressId,
-      status = @Status
-    WHERE id = @Id;";
+      address_id = @AddressId
+    WHERE Id = @Id";
 }

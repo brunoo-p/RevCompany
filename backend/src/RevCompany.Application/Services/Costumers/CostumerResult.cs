@@ -1,4 +1,3 @@
-using RevCompany.Domain.Entities.Costumers;
 using RevCompany.Infrastructure.Persistence.costumer;
 
 namespace RevCompany.Application.Services.Costumers;

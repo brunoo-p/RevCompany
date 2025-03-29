@@ -1,6 +1,7 @@
 using RevCompany.Application.Common.Interfaces.Persistence;
 using RevCompany.Application.Services.Costumers;
 using RevCompany.Contracts.Costumer;
+using RevCompany.Contracts.Costumer.valueObject;
 using RevCompany.Domain.Entities.common;
 using RevCompany.Domain.Entities.Costumer;
 using RevCompany.Domain.Entities.Costumers;
@@ -33,19 +34,36 @@ public class CostumerService : ICostumerService
     return new CostumerResult(created);
   }
 
-  public async Task<List<CostumerResult>> GetAllAsync()
+  public async Task<List<CostumerResult>> GetAllAsync(CostumerQueryRequest request)
   {
+    
     var list = await this._costumerRepository.GetAllAsync();
-    return list.Select(costumer => new CostumerResult(costumer)).ToList();
+    return [.. list.Select(costumer => new CostumerResult(costumer))];
   }
 
-  public async Task<CostumerResult> GetByIdAsync(string id)
+  public async Task<CostumerResult> GetByIdAsync(Guid id)
   {
-    if (await this._costumerRepository.GetByIdAsync(id) is not CostumerDTO costumer) {
+    if (await this._costumerRepository.GetByIdAsync(id) is not CostumerQueryByIdVo costumer) {
       throw new Exception("not found");
     };
-    
-    return new CostumerResult(costumer);
+    object address = new {
+      id = costumer.Address.Id,
+      street = costumer.Address.Street,
+      number = costumer.Address.Number,
+      city = costumer.Address.City,
+      state = costumer.Address.State,
+      country = costumer.Address.Country,
+      zipCode = costumer.Address.ZipCode,
+    };
+    var costumerDTO = new CostumerDTO(
+      costumer.Id,
+      costumer.Name,
+      costumer.Email,
+      costumer.Phone,
+      address,
+      costumer.Status
+    );
+    return new CostumerResult(costumerDTO);
   }
 
   public async Task<CostumerResult> GetByEmail(string email)
@@ -57,22 +75,30 @@ public class CostumerService : ICostumerService
     return new CostumerResult(costumer);
   }
 
-  public async Task<CostumerResult> UpdateAsync(string id, string name, string email, string phone, Address address, string status)
+  public async Task<CostumerResult> UpdateAsync (Guid id, string name, string email, string phone, Address address)
   {
-    await this.GetByIdAsync(id);
-
-    var costumer = new CostumerEntity(
-      name, new Email(email), phone, address, Enum.Parse<CostumerStatusEnum>(status)
+    var byId = await this.GetByIdAsync(id);
+    var update = new CostumerEntity(
+      name, new Email(email), phone, address
     );
-
-    var updated = await _costumerRepository.UpdateAsync(costumer);
+    var updated = await _costumerRepository.UpdateAsync(
+      id,
+      update,
+      byId.costumer.Address.id
+    );
     var costumerUpdated = new CostumerDTO(
-        new Guid(id),
-        updated.Name,
-        updated.Email,
-        updated.Phone,
-        updated.Address,
-        updated.Status);
+      id,
+      updated.Name,
+      updated.Email,
+      updated.Phone,
+      updated.Address,
+      updated.Status);
     return new CostumerResult(costumerUpdated);
+  }
+
+  public void Delete(string costumerId)
+  {
+    this._costumerRepository.Delete(new Guid(costumerId));
+    return;
   }
 }

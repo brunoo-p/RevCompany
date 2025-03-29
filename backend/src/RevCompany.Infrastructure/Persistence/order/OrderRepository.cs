@@ -150,11 +150,11 @@ public class OrderRepository : IOrderRepository
     while (await orderReader.ReadAsync())
     {
         orders.Add(new OrderDTO(
-            orderReader.GetGuid(0), // OrderId
-            orderReader.GetGuid(1), // CostumerId
-            new List<Item>(),    // Os itens serão preenchidos depois
-            orderReader.GetString(2), // Status
-            0m                      // O valor total será calculado depois
+            orderReader.GetGuid(0),
+            orderReader.GetGuid(1),
+            new List<Item>(),
+            orderReader.GetString(2),
+            0m                      
         ));
     }
 
@@ -163,7 +163,6 @@ public class OrderRepository : IOrderRepository
     if (!orders.Any())
         return orders;
 
-    // Buscar os itens das ordens
     var orderIds = orders.Select(o => o.Id).ToArray();
 
     using var itemCommand = new NpgsqlCommand(sqlItems, (NpgsqlConnection)connection);
@@ -235,17 +234,18 @@ public class OrderRepository : IOrderRepository
 
       using var reader = await command.ExecuteReaderAsync();
 
-      if (await reader.ReadAsync())
-      {
-          return new OrderDTO(
-              reader.GetGuid(0), // Id
-              reader.GetGuid(1), // CostumerId
-              new List<Item>(), // Items (not updated here)
-              reader.GetString(2), // Status
-              0m // Amount (not updated here)
-          );
-      }
-      return null;
+      return new OrderDTO(
+        reader.GetGuid(0),
+        reader.GetGuid(1),
+        new List<Item>(),
+        reader.GetString(2),
+        0m
+      );      
 
     }
+
+  public void Delete(Guid orderId)
+  {
+    throw new NotImplementedException();
+  }
 }

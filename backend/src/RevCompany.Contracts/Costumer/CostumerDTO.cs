@@ -1,6 +1,3 @@
-using RevCompany.Domain.Entities.common;
-using RevCompany.Domain.Entities.Costumer;
-
 namespace RevCompany.Infrastructure.Persistence.costumer;
 
 public record CostumerDTO(
@@ -8,6 +5,6 @@ public record CostumerDTO(
   string Name,
   string Email,
   string Phone,
-  object Address,
+  dynamic Address,
   string Status
 );
